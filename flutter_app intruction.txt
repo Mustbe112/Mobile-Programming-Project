@@ -1,0 +1,31 @@
+flutter_app/
+│
+├── lib/
+│   ├── main.dart
+│   ├── services/
+│   │   ├── api.dart
+│   │  
+│   ├── screens/
+│   │   ├── login_page.dart
+│   │   ├── register_page.dart
+│   │   ├── student_home.dart
+│   │   └── lecturer_home.dart
+│   
+│
+├── pubspec.yaml
+
+
+backend_api/
+│
+├── index.js            ← main server file (Express)
+├── db.js               ← database connection (TiDB/MySQL2)
+├── package.json
+├── .env                ← DB credentials (Do NOT publish publicly)
+│
+├── routes/
+│   ├── auth.js
+│   ├── student.js
+│   ├── lecturer.js
+│   └── attendance.js
+│
+
