@@ -29,3 +29,5 @@ backend_api/
 │   └── attendance.js
 │
 
+Dbevear Link
+jdbc:mysql://4UGPJXNNoyCPubx.root:<PASSWORD>@gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/digital_id?sslMode=VERIFY_IDENTITY
