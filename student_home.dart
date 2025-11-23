@@ -128,241 +128,480 @@ class _StudentHomeState extends State<StudentHome> {
   Widget build(BuildContext context) {
     final pages = [_profileTab(), _qrTab(), _attendanceTab(), _emergencyTab()];
     return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F0),
       body: IndexedStack(index: index, children: pages),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF0052CC),
-        unselectedItemColor: Colors.grey,
-        elevation: 8,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'QR'),
-          BottomNavigationBarItem(icon: Icon(Icons.badge), label: 'Attendance'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emergency),
-            label: 'Emergency',
-          ),
-        ],
-        onTap: (i) => setState(() => index = i),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C3E2E),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: index,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: const Color(0xFF2C3E2E),
+          selectedItemColor: const Color(0xFFD4A574),
+          unselectedItemColor: const Color(0xFF9BA89C),
+          elevation: 0,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline, size: 26),
+              activeIcon: Icon(Icons.person, size: 26),
+              label: 'Profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code_2_outlined, size: 26),
+              activeIcon: Icon(Icons.qr_code_2, size: 26),
+              label: 'QR',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.check_circle_outline, size: 26),
+              activeIcon: Icon(Icons.check_circle, size: 26),
+              label: 'Attendance',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emergency_outlined, size: 26),
+              activeIcon: Icon(Icons.emergency, size: 26),
+              label: 'Emergency',
+            ),
+          ],
+          onTap: (i) => setState(() => index = i),
+        ),
       ),
     );
   }
 
   Widget _profileTab() => Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color(0xFF1B4332),
-          Color(0xFF2D6A4F),
-          Color(0xFF40916C),
-        ],
-      ),
-    ),
+    color: const Color(0xFFFAF7F0),
     child: RefreshIndicator(
       onRefresh: () async => _loadProfile(),
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Center(
-            child: Container(
-              width: 320,
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEDE7DB),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+      child: CustomScrollView(
+        slivers: [
+          // App Bar
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF3D4F3F),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'My Profile',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Stack(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Color(0xFFFAF7F0)),
+                onPressed: _logout,
+              ),
+            ],
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  Positioned(
-                    left: -50,
-                    top: 50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -30,
-                    bottom: 100,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Center(
-                          child: Text(
-                            'UNIPASS',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1E3A5F),
-                              letterSpacing: 3,
-                            ),
-                          ),
+                  // Profile Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                        const SizedBox(height: 24),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Profile Photo
                         Container(
-                          width: 150,
-                          height: 180,
+                          width: 100,
+                          height: 100,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFA39C8E),
-                            borderRadius: BorderRadius.circular(8),
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF3D4F3F),
+                            border: Border.all(
+                              color: const Color(0xFFD4A574),
+                              width: 3,
+                            ),
                           ),
                           child:
                               profile['photo_url'] != null &&
                                   (profile['photo_url'] as String).isNotEmpty
                               ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(50),
                                   child: Image.network(
                                     profile['photo_url'],
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) => const Icon(
                                       Icons.person,
-                                      size: 80,
-                                      color: Colors.white,
+                                      size: 50,
+                                      color: Color(0xFF9BA89C),
                                     ),
                                   ),
                                 )
                               : const Icon(
                                   Icons.person,
-                                  size: 80,
-                                  color: Colors.white,
+                                  size: 50,
+                                  color: Color(0xFF9BA89C),
                                 ),
                         ),
-                        const SizedBox(height: 20),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Column(
-                            children: List.generate(12, (index) {
-                              final widths = [3.0, 1.0, 4.0, 2.0, 1.0, 3.0, 2.0, 1.0, 4.0, 2.0, 3.0, 1.0];
-                              return Container(
-                                width: widths[index] * 8,
-                                height: 3,
-                                margin: const EdgeInsets.only(bottom: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E3A5F),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              );
-                            }),
+                        const SizedBox(height: 16),
+                        // Name
+                        Text(
+                          profile['name'] ?? 'N/A',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFAF7F0),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        // ID
+                        Text(
+                          'ID: ${profile['id'] ?? widget.id}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFD4A574),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        _buildInfoRow('Name', profile['name'] ?? 'N/A'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('ID', profile['id'] ?? widget.id),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('Department', profile['department'] ?? 'N/A'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('Major', profile['major'] ?? 'N/A'),
+                        Divider(color: const Color(0xFF3D4F3F)),
                         const SizedBox(height: 16),
+                        // Info Rows
+                        _buildModernInfoRow(
+                          Icons.school,
+                          'Department',
+                          profile['department'] ?? 'N/A',
+                        ),
+                        const SizedBox(height: 12),
+                        _buildModernInfoRow(
+                          Icons.book,
+                          'Major',
+                          profile['major'] ?? 'N/A',
+                        ),
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 24),
+
+                  // Enrolled Courses Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'My Courses',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2C3E2E),
+                        ),
+                      ),
+                      Text(
+                        '${courses.length} enrolled',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF3D4F3F),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (courses.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C3E2E),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.school_outlined,
+                            size: 48,
+                            color: const Color(0xFF3D4F3F),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'No courses enrolled yet',
+                            style: TextStyle(
+                              color: Color(0xFF9BA89C),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ...courses.map(
+                      (c) => Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2C3E2E),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          leading: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD4A574).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.book,
+                              color: Color(0xFFD4A574),
+                              size: 24,
+                            ),
+                          ),
+                          title: Text(
+                            c['course_name'] ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Color(0xFFFAF7F0),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              c['course_id'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF9BA89C),
+                              ),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Color(0xFFD98B8B),
+                              size: 20,
+                            ),
+                            onPressed: () => _unenroll(c['course_id']),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
+                  // Enroll Section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Enroll in New Course',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFAF7F0),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: enrollCourseId,
+                          style: const TextStyle(color: Color(0xFFFAF7F0)),
+                          decoration: InputDecoration(
+                            labelText: 'Course ID',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF9BA89C),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.tag,
+                              size: 20,
+                              color: Color(0xFFD4A574),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A574),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFF3D4F3F),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: enrollCourseName,
+                          style: const TextStyle(color: Color(0xFFFAF7F0)),
+                          decoration: InputDecoration(
+                            labelText: 'Course Name',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF9BA89C),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.school,
+                              size: 20,
+                              color: Color(0xFFD4A574),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A574),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFF3D4F3F),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: _enroll,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD4A574),
+                              foregroundColor: const Color(0xFF2C3E2E),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Enroll Course',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Enrolled courses',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          ...courses.map(
-            (c) => Card(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              child: ListTile(
-                title: Text(c['course_name'] ?? ''),
-                subtitle: Text(c['course_id'] ?? ''),
-                trailing: IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                  onPressed: () => _unenroll(c['course_id']),
-                ),
-              ),
-            ),
-          ),
-          const Divider(height: 30, color: Colors.white30),
-          const Text(
-            'Enroll in New Course',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: enrollCourseId,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              labelText: 'Course id',
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: enrollCourseName,
-            style: const TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              labelText: 'Course name',
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          const SizedBox(height: 15),
-          ElevatedButton(
-            onPressed: _enroll,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4A90E2),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Enroll', style: TextStyle(fontSize: 16, color: Colors.white)),
-          ),
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout, size: 20),
-            label: const Text('Logout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              side: const BorderSide(color: Colors.red, width: 2),
-              backgroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     ),
   );
+
+  Widget _buildModernInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD4A574).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 18, color: const Color(0xFFD4A574)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF9BA89C),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFFFAF7F0),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _qrTab() {
     final payload = jsonEncode({
@@ -374,193 +613,276 @@ class _StudentHomeState extends State<StudentHome> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1B4332),
-            Color(0xFF2D6A4F),
-            Color(0xFF40916C),
-          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
         ),
       ),
-      child: Center(
+      child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4A90E2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.qr_code_2, color: Colors.white, size: 36),
-            ),
-            const SizedBox(height: 16),
-            RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(text: 'UNI', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF4A90E2), letterSpacing: 2)),
-                  TextSpan(text: 'PASS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF9B59B6), letterSpacing: 2)),
-                ],
+            // Header
+            const Text(
+              'Student QR Code',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAF7F0),
               ),
             ),
             const SizedBox(height: 8),
-            const Text('Student Identification', style: TextStyle(fontSize: 14, color: Colors.white70)),
-            const SizedBox(height: 32),
-            const Text('SCAN HERE', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(color: const Color(0xFFD32F2F), borderRadius: BorderRadius.circular(4)),
-              child: const Text('FOR PROFILE DETAIL', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+            Text(
+              profile['name'] ?? 'N/A',
+              style: const TextStyle(fontSize: 16, color: Color(0xFFD4A574)),
             ),
-            const SizedBox(height: 16),
-            Column(
-              children: [
-                Icon(Icons.keyboard_arrow_down, color: const Color(0xFFD32F2F), size: 24),
-                Icon(Icons.keyboard_arrow_down, color: const Color(0xFFD32F2F), size: 24),
-              ],
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 40),
+            // QR Code Container
             Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE0E0E0), width: 2),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))],
+                color: const Color(0xFFFAF7F0),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
-                  QrImageView(data: payload, size: 220, backgroundColor: Colors.white),
-                  const SizedBox(height: 16),
-                  Text('QR CODE', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF666666), letterSpacing: 2)),
+                  QrImageView(
+                    data: payload,
+                    size: 250,
+                    backgroundColor: const Color(0xFFFAF7F0),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'ID: ${profile['id'] ?? widget.id}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C3E2E),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Scan for identification',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF3D4F3F)),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
+            // Info
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text('This QR contains your ID, name, major, and department', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Colors.white70)),
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Text(
+                'This QR code contains your student information including ID, name, major, and department',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: const Color(0xFFFAF7F0).withOpacity(0.8),
+                  height: 1.5,
+                ),
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(width: 80, child: Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF1E3A5F)))),
-        const Text(': ', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-        Expanded(child: Text(value, style: const TextStyle(fontSize: 14, color: Color(0xFF2C2C2C)))),
-      ],
     );
   }
 
   Widget _attendanceTab() {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1B4332),
-            Color(0xFF2D6A4F),
-            Color(0xFF40916C),
-          ],
-        ),
-      ),
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Container(
-            width: 320,
-            margin: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDE7DB),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 20, offset: const Offset(0, 10))],
-            ),
-            child: Stack(
-              children: [
-                Positioned(left: -50, top: 50, child: Container(width: 150, height: 150, decoration: BoxDecoration(color: const Color(0xFFE8C4A0).withOpacity(0.3), shape: BoxShape.circle))),
-                Positioned(right: -30, bottom: 100, child: Container(width: 100, height: 100, decoration: BoxDecoration(color: const Color(0xFFE8C4A0).withOpacity(0.3), shape: BoxShape.circle))),
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('UNIPASS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F), letterSpacing: 3)),
-                      const SizedBox(height: 8),
-                      const Text('Submit Attendance', style: TextStyle(fontSize: 14, color: Color(0xFF666666), letterSpacing: 1)),
-                      const SizedBox(height: 30),
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1E3A5F),
-                          shape: BoxShape.circle,
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))],
-                        ),
-                        child: const Icon(Icons.check_circle_outline, color: Colors.white, size: 40),
-                      ),
-                      const SizedBox(height: 30),
-                      TextField(
-                        controller: attendanceCourseId,
-                        style: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: 'Course ID',
-                          labelStyle: const TextStyle(color: Color(0xFF666666), fontSize: 13),
-                          floatingLabelStyle: const TextStyle(color: Color(0xFF1E3A5F), fontSize: 14),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.7),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E3A5F), width: 2)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: attendanceCode,
-                        style: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: 'Attendance Code',
-                          labelStyle: const TextStyle(color: Color(0xFF666666), fontSize: 13),
-                          floatingLabelStyle: const TextStyle(color: Color(0xFF1E3A5F), fontSize: 14),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.7),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF1E3A5F), width: 2)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: _submitAttendance,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E3A5F),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          ),
-                          child: const Text('Submit Attendance', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Enter the code provided by your lecturer', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xFF666666), fontStyle: FontStyle.italic)),
-                    ],
+      color: const Color(0xFFFAF7F0),
+      child: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 100,
+              floating: false,
+              pinned: true,
+              backgroundColor: const Color(0xFF3D4F3F),
+              flexibleSpace: FlexibleSpaceBar(
+                title: const Text(
+                  'Attendance',
+                  style: TextStyle(
+                    color: Color(0xFFFAF7F0),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Icon
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4A574).withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_circle_outline,
+                        color: Color(0xFFD4A574),
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Submit Your Attendance',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2C3E2E),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Enter the code provided by your lecturer',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, color: Color(0xFF3D4F3F)),
+                    ),
+                    const SizedBox(height: 32),
+                    // Form Container
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C3E2E),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          TextField(
+                            controller: attendanceCourseId,
+                            style: const TextStyle(color: Color(0xFFFAF7F0)),
+                            decoration: InputDecoration(
+                              labelText: 'Course ID',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF9BA89C),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.book,
+                                size: 20,
+                                color: Color(0xFFD4A574),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF3D4F3F),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF3D4F3F),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD4A574),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFF3D4F3F),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: attendanceCode,
+                            style: const TextStyle(color: Color(0xFFFAF7F0)),
+                            decoration: InputDecoration(
+                              labelText: 'Attendance Code',
+                              labelStyle: const TextStyle(
+                                color: Color(0xFF9BA89C),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.confirmation_number,
+                                size: 20,
+                                color: Color(0xFFD4A574),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF3D4F3F),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF3D4F3F),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFD4A574),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFF3D4F3F),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _submitAttendance,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD4A574),
+                                foregroundColor: const Color(0xFF2C3E2E),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: const Text(
+                                'Submit Attendance',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -568,128 +890,197 @@ class _StudentHomeState extends State<StudentHome> {
 
   Widget _emergencyTab() {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1B4332),
-            Color(0xFF2D6A4F),
-            Color(0xFF40916C),
-          ],
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEDE7DB),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 20, offset: const Offset(0, 10))],
+      color: const Color(0xFFFAF7F0),
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color.fromARGB(255, 61, 79, 63),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'Emergency',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Stack(
-                children: [
-                  Positioned(left: -50, top: 50, child: Container(width: 150, height: 150, decoration: BoxDecoration(color: const Color(0xFFE8C4A0).withOpacity(0.3), shape: BoxShape.circle))),
-                  Positioned(right: -30, bottom: 30, child: Container(width: 100, height: 100, decoration: BoxDecoration(color: const Color(0xFFE8C4A0).withOpacity(0.3), shape: BoxShape.circle))),
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('UNIPASS', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1E3A5F), letterSpacing: 3)),
-                        const SizedBox(height: 8),
-                        const Text('Emergency Contacts', style: TextStyle(fontSize: 14, color: Color(0xFF666666), letterSpacing: 1)),
-                        const SizedBox(height: 30),
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD32F2F),
-                            shape: BoxShape.circle,
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))],
-                          ),
-                          child: const Icon(Icons.emergency, color: Colors.white, size: 40),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text('Quick access to emergency services', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Color(0xFF666666), fontStyle: FontStyle.italic)),
-                      ],
-                    ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(255, 61, 79, 63),
+                      Color.fromARGB(255, 61, 79, 63),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-            const Text('University Emergency Contacts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white), textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            _buildUniversityContact('Campus Security Hotline', '+66 xxx xxx xxx', Icons.security, const Color(0xFFD32F2F)),
-            _buildUniversityContact('Emergency Medical Unit', '+66 xxx xxx xxx', Icons.local_hospital, const Color(0xFFE53935)),
-            _buildUniversityContact('Fire & Safety Department', '+66 xxx xxx xxx', Icons.fire_extinguisher, const Color(0xFFF44336)),
-            _buildUniversityContact('Counseling & Student Support', '+66 xxx xxx xxx', Icons.psychology, const Color(0xFF1976D2)),
-            _buildUniversityContact('IT Department (System Issues)', '+66 xxx xxx xxx', Icons.computer, const Color(0xFF0288D1)),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
-              ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(color: const Color(0xFF757575).withOpacity(0.1), shape: BoxShape.circle),
-                    child: const Icon(Icons.email, color: Color(0xFF757575), size: 24),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'University Contacts',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2C3E2E),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 12),
+                  _buildModernEmergencyContact(
+                    'Campus Security',
+                    '+66 xxx xxx xxx',
+                    Icons.security,
+                    const Color.fromARGB(255, 212, 165, 116),
+                  ),
+                  _buildModernEmergencyContact(
+                    'Medical Unit',
+                    '+66 xxx xxx xxx',
+                    Icons.local_hospital,
+                    const Color.fromARGB(255, 212, 165, 116),
+                  ),
+                  _buildModernEmergencyContact(
+                    'Fire & Safety',
+                    '+66 xxx xxx xxx',
+                    Icons.fire_extinguisher,
+                    const Color.fromARGB(255, 212, 165, 116),
+                  ),
+                  _buildModernEmergencyContact(
+                    'Student Support',
+                    '+66 xxx xxx xxx',
+                    Icons.psychology,
+                    const Color(0xFFD4A574),
+                  ),
+                  _buildModernEmergencyContact(
+                    'IT Support',
+                    '+66 xxx xxx xxx',
+                    Icons.computer,
+                    const Color(0xFFD4A574),
+                  ),
+                  const SizedBox(height: 16),
+                  // Email Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
-                        const Text('Email Support', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                        const SizedBox(height: 4),
-                        Text('helpdesk@youruniversity.edu', style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD4A574).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.email,
+                            color: Color(0xFFD4A574),
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Email Support',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color(0xFFFAF7F0),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'helpdesk@youruniversity.edu',
+                                style: TextStyle(
+                                  color: Color(0xFF9BA89C),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildUniversityContact(String title, String phone, IconData icon, Color color) {
+  Widget _buildModernEmergencyContact(
+    String title,
+    String phone,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF2C3E2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 48,
           height: 48,
-          decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(icon, color: color, size: 24),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-        subtitle: Padding(padding: const EdgeInsets.only(top: 4), child: Text(phone, style: TextStyle(color: Colors.grey[600], fontSize: 13))),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: Color(0xFFFAF7F0),
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            phone,
+            style: const TextStyle(color: Color(0xFF9BA89C), fontSize: 13),
+          ),
+        ),
         trailing: IconButton(
-          icon: Icon(Icons.phone, color: color, size: 24),
+          icon: Icon(Icons.phone, color: color, size: 22),
           onPressed: () {
             final url = Uri.parse('tel:$phone');
             launchUrl(url);

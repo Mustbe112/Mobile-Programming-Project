@@ -139,26 +139,6 @@ class _LecturerHomeState extends State<LecturerHome> {
     }
   }
 
-  Future<void> _exportExcel() async {
-    final cid = viewCourseId.text.trim();
-    final date = viewDate.text.trim();
-    if (cid.isEmpty || date.isEmpty) return _show('Fill all fields');
-
-    final url = Uri.parse(
-      '$API_BASE/attendance/export?course_id=$cid&date=$date',
-    );
-
-    try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        _show('Cannot launch export link');
-      }
-    } catch (e) {
-      _show('Could not open URL');
-    }
-  }
-
   Future<void> _logout() async {
     final sp = await SharedPreferences.getInstance();
     await sp.clear();
@@ -171,7 +151,14 @@ class _LecturerHomeState extends State<LecturerHome> {
   }
 
   void _show(String s) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(s)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(s),
+        backgroundColor: const Color(0xFF2C3E2E),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 
   Future<void> _callEmergencyContact(String phone) async {
@@ -198,28 +185,57 @@ class _LecturerHomeState extends State<LecturerHome> {
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F0),
       body: IndexedStack(index: index, children: pages),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF0052CC),
-        unselectedItemColor: Colors.grey,
-        elevation: 8,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code), label: 'QR'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock_clock),
-            label: 'Generate',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: 'View'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emergency),
-            label: 'Emergency',
-          ),
-        ],
-        onTap: (i) => setState(() => index = i),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF2C3E2E),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: index,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: const Color(0xFF2C3E2E),
+          selectedItemColor: const Color(0xFFD4A574),
+          unselectedItemColor: const Color(0xFF9BA89C),
+          elevation: 0,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline, size: 26),
+              activeIcon: Icon(Icons.person, size: 26),
+              label: 'Profile',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code_2_outlined, size: 26),
+              activeIcon: Icon(Icons.qr_code_2, size: 26),
+              label: 'QR',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.lock_clock_outlined, size: 26),
+              activeIcon: Icon(Icons.lock_clock, size: 26),
+              label: 'Generate',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.assessment_outlined, size: 26),
+              activeIcon: Icon(Icons.assessment, size: 26),
+              label: 'View',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.emergency_outlined, size: 26),
+              activeIcon: Icon(Icons.emergency, size: 26),
+              label: 'Emergency',
+            ),
+          ],
+          onTap: (i) => setState(() => index = i),
+        ),
       ),
     );
   }
@@ -227,353 +243,419 @@ class _LecturerHomeState extends State<LecturerHome> {
   // ------------------ TABS ------------------
 
   Widget _profileTab() => Container(
-    color: const Color(0xFFF5F1E8),
+    color: const Color(0xFFFAF7F0),
     child: RefreshIndicator(
       onRefresh: _loadProfile,
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Center(
-            child: Container(
-              width: 320,
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEDE7DB),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+      color: const Color(0xFFD4A574),
+      child: CustomScrollView(
+        slivers: [
+          // App Bar
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF3D4F3F),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'My Profile',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Stack(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Color(0xFFFAF7F0)),
+                onPressed: _logout,
+              ),
+            ],
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  // Decorative circles
-                  Positioned(
-                    left: -50,
-                    top: 50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: -30,
-                    bottom: 100,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  // Main content
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Header with UNIPASS app name
-                        const Center(
-                          child: Text(
-                            'UNIPASS',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E3A5F),
-                              letterSpacing: 3,
-                            ),
-                          ),
+                  // Profile Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
-                        const SizedBox(height: 24),
-                        // Photo
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Profile Photo
                         Container(
-                          width: 150,
-                          height: 180,
+                          width: 100,
+                          height: 100,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFA39C8E),
-                            borderRadius: BorderRadius.circular(8),
+                            shape: BoxShape.circle,
+                            color: const Color(0xFF3D4F3F),
+                            border: Border.all(
+                              color: const Color(0xFFD4A574),
+                              width: 3,
+                            ),
                           ),
                           child:
                               profile['photo_url'] != null &&
                                   (profile['photo_url'] as String).isNotEmpty
                               ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(50),
                                   child: Image.network(
                                     profile['photo_url'],
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, __, ___) => const Icon(
                                       Icons.person,
-                                      size: 80,
-                                      color: Colors.white,
+                                      size: 50,
+                                      color: Color(0xFF9BA89C),
                                     ),
                                   ),
                                 )
                               : const Icon(
                                   Icons.person,
-                                  size: 80,
-                                  color: Colors.white,
+                                  size: 50,
+                                  color: Color(0xFF9BA89C),
                                 ),
                         ),
-                        const SizedBox(height: 20),
-                        // Barcode design on the right
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Column(
-                            children: List.generate(12, (index) {
-                              final widths = [
-                                3.0,
-                                1.0,
-                                4.0,
-                                2.0,
-                                1.0,
-                                3.0,
-                                2.0,
-                                1.0,
-                                4.0,
-                                2.0,
-                                3.0,
-                                1.0,
-                              ];
-                              return Container(
-                                width: widths[index] * 8,
-                                height: 3,
-                                margin: const EdgeInsets.only(bottom: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E3A5F),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              );
-                            }),
+                        const SizedBox(height: 16),
+                        // Name
+                        Text(
+                          profile['name'] ?? 'Lecturer',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFAF7F0),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        // ID
+                        Text(
+                          'ID: ${profile['id'] ?? widget.id}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFD4A574),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Lecturer info
-                        _buildInfoRow('Name', profile['name'] ?? 'N/A'),
-                        const SizedBox(height: 12),
-                        _buildInfoRow('ID', profile['id'] ?? widget.id),
-                        const SizedBox(height: 12),
-                        _buildInfoRow(
+                        Divider(color: const Color(0xFF3D4F3F)),
+                        const SizedBox(height: 16),
+                        // Info Row
+                        _buildModernInfoRow(
+                          Icons.business,
                           'Department',
                           profile['department'] ?? 'N/A',
                         ),
-                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 24),
+
+                  // Courses Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'My Courses',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2C3E2E),
+                        ),
+                      ),
+                      Text(
+                        '${courses.length} courses',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF3D4F3F),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (courses.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2C3E2E),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.school_outlined,
+                            size: 48,
+                            color: const Color(0xFF3D4F3F),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'No courses added yet',
+                            style: TextStyle(
+                              color: Color(0xFF9BA89C),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ...courses.map(
+                      (c) => Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2C3E2E),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          leading: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD4A574).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.book,
+                              color: Color(0xFFD4A574),
+                              size: 24,
+                            ),
+                          ),
+                          title: Text(
+                            c['course_name'] ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Color(0xFFFAF7F0),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              c['course_id'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF9BA89C),
+                              ),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Color(0xFFD98B8B),
+                              size: 20,
+                            ),
+                            onPressed: () => _deleteCourse(c['course_id']),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
+                  // Add Course Section
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Add New Course',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFAF7F0),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: addCourseId,
+                          style: const TextStyle(color: Color(0xFFFAF7F0)),
+                          decoration: InputDecoration(
+                            labelText: 'Course ID',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF9BA89C),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.tag,
+                              size: 20,
+                              color: Color(0xFFD4A574),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A574),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFF3D4F3F),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: addCourseName,
+                          style: const TextStyle(color: Color(0xFFFAF7F0)),
+                          decoration: InputDecoration(
+                            labelText: 'Course Name',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFF9BA89C),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.school,
+                              size: 20,
+                              color: Color(0xFFD4A574),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A574),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFF3D4F3F),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: _addCourse,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD4A574),
+                              foregroundColor: const Color(0xFF2C3E2E),
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Add Course',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
-          // Courses section
-          const SizedBox(height: 20),
-          const Text(
-            'Enrolled courses',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          ...courses.map(
-            (c) => Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                title: Text(
-                  c['course_name'] ?? '',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    c['course_id'] ?? '',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.remove_circle_outline,
-                    color: Colors.red,
-                    size: 24,
-                  ),
-                  onPressed: () => _deleteCourse(c['course_id']),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          const Text(
-            'Enroll in New Course',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 15),
-          TextField(
-            controller: addCourseId,
-            style: const TextStyle(fontSize: 16),
-            decoration: InputDecoration(
-              labelText: 'Course id',
-              labelStyle: TextStyle(color: Colors.grey[600], fontSize: 15),
-              floatingLabelStyle: const TextStyle(
-                color: Color(0xFF0052CC),
-                fontSize: 16,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Color(0xFF0052CC),
-                  width: 2,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: addCourseName,
-            style: const TextStyle(fontSize: 16),
-            decoration: InputDecoration(
-              labelText: 'Course name',
-              labelStyle: TextStyle(color: Colors.grey[600], fontSize: 15),
-              floatingLabelStyle: const TextStyle(
-                color: Color(0xFF0052CC),
-                fontSize: 16,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(
-                  color: Color(0xFF0052CC),
-                  width: 2,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: _addCourse,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0052CC),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Enroll',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          OutlinedButton.icon(
-            onPressed: _logout,
-            icon: const Icon(Icons.logout, size: 20),
-            label: const Text(
-              'Logout',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              side: const BorderSide(color: Colors.red, width: 2),
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
         ],
       ),
     ),
   );
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildModernInfoRow(IconData icon, String label, String value) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E3A5F),
-            ),
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD4A574).withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
           ),
+          child: Icon(icon, size: 18, color: const Color(0xFFD4A574)),
         ),
-        const Text(
-          ': ',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-        ),
+        const SizedBox(width: 12),
         Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF2C2C2C)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF9BA89C),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFFFAF7F0),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -588,135 +670,91 @@ class _LecturerHomeState extends State<LecturerHome> {
     });
 
     return Container(
-      color: const Color(0xFFF5F1E8),
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Container(
-            width: 320,
-            margin: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDE7DB),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Header
+            const Text(
+              'Lecturer QR Code',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFAF7F0),
+              ),
             ),
-            child: Stack(
-              children: [
-                // Decorative circles
-                Positioned(
-                  left: -50,
-                  top: 50,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                      shape: BoxShape.circle,
+            const SizedBox(height: 8),
+            Text(
+              profile['name'] ?? 'N/A',
+              style: const TextStyle(fontSize: 16, color: Color(0xFFD4A574)),
+            ),
+            const SizedBox(height: 40),
+            // QR Code Container
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAF7F0),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  QrImageView(
+                    data: payload,
+                    size: 250,
+                    backgroundColor: const Color(0xFFFAF7F0),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'ID: ${profile['id'] ?? widget.id}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C3E2E),
                     ),
                   ),
-                ),
-                Positioned(
-                  right: -30,
-                  bottom: 100,
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    profile['department'] ?? 'N/A',
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF3D4F3F)),
                   ),
-                ),
-                // Main content
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header
-                      const Text(
-                        'UNIPASS',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E3A5F),
-                          letterSpacing: 3,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Lecturer QR Code',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF666666),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      // QR Code
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: QrImageView(
-                          data: payload,
-                          size: 200,
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Info section
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            _buildInfoRow('ID', profile['id'] ?? widget.id),
-                            const SizedBox(height: 8),
-                            _buildInfoRow('Name', profile['name'] ?? 'N/A'),
-                            const SizedBox(height: 8),
-                            _buildInfoRow(
-                              'Department',
-                              profile['department'] ?? 'N/A',
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Instructions
-                      const Text(
-                        'QR code contains lecturer ID, name, and department',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF666666),
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Share with students',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF3D4F3F)),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            const SizedBox(height: 40),
+            // Info
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Text(
+                'This QR code contains your lecturer information including ID, name, and department',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: const Color(0xFFFAF7F0).withOpacity(0.8),
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -724,181 +762,177 @@ class _LecturerHomeState extends State<LecturerHome> {
 
   Widget _genTab() {
     return Container(
-      color: const Color(0xFFF5F1E8),
-      child: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Container(
-            width: 320,
-            margin: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDE7DB),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+      color: const Color(0xFFFAF7F0),
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF3D4F3F),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'Generate',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
+              ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+                  ),
+                ),
+              ),
             ),
-            child: Stack(
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Decorative circles
-                Positioned(
-                  left: -50,
-                  top: 50,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
+                // Colored Header Section
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF3D4F3F),
                   ),
-                ),
-                Positioned(
-                  right: -30,
-                  bottom: 100,
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-                // Main content
-                Padding(
-                  padding: const EdgeInsets.all(24),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Header
-                      const Text(
-                        'UNIPASS',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E3A5F),
-                          letterSpacing: 3,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Generate Attendance Code',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF666666),
-                          letterSpacing: 1,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      // Icon
                       Container(
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E3A5F),
+                          color: const Color(0xFFD4A574).withOpacity(0.2),
                           shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
                         ),
                         child: const Icon(
                           Icons.lock_clock,
-                          color: Colors.white,
+                          color: Color(0xFFD4A574),
                           size: 40,
                         ),
                       ),
-                      const SizedBox(height: 30),
-                      // Course ID field
-                      TextField(
-                        controller: genCourseId,
-                        style: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          labelText: 'Course ID',
-                          labelStyle: const TextStyle(
-                            color: Color(0xFF666666),
-                            fontSize: 13,
-                          ),
-                          floatingLabelStyle: const TextStyle(
-                            color: Color(0xFF1E3A5F),
-                            fontSize: 14,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.7),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF1E3A5F),
-                              width: 2,
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Generate Attendance Code',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFAF7F0),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      // Generate button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: _generateCode,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E3A5F),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text(
-                            'Generate Code',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Create a unique code for students',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: const Color(0xFFFAF7F0).withOpacity(0.7),
                         ),
                       ),
-                      // Generated code display
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 32),
+                      // Form Container
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2C3E2E),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: genCourseId,
+                              style: const TextStyle(color: Color(0xFFFAF7F0)),
+                              decoration: InputDecoration(
+                                labelText: 'Course ID',
+                                labelStyle: const TextStyle(
+                                  color: Color(0xFF9BA89C),
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.class_outlined,
+                                  size: 20,
+                                  color: Color(0xFFD4A574),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD4A574),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _generateCode,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFD4A574),
+                                  foregroundColor: const Color(0xFF2C3E2E),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Generate Code',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       if (lastGenerated.isNotEmpty) ...[
                         const SizedBox(height: 24),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(32),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFF1E3A5F),
-                              width: 2,
-                            ),
+                            color: const Color(0xFF2C3E2E),
+                            borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -907,43 +941,41 @@ class _LecturerHomeState extends State<LecturerHome> {
                               const Text(
                                 'Generated Code',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF666666),
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Color(0xFF9BA89C),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 12),
                               Text(
                                 lastGenerated,
                                 style: const TextStyle(
-                                  fontSize: 28,
+                                  fontSize: 36,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E3A5F),
-                                  letterSpacing: 4,
+                                  color: Color(0xFFD4A574),
+                                  letterSpacing: 8,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD4A574).withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Text(
+                                  'Share with students',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFFD4A574),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Share this code with students',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF666666),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Enter course ID and generate a unique attendance code',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF666666),
-                            fontStyle: FontStyle.italic,
                           ),
                         ),
                       ],
@@ -953,617 +985,579 @@ class _LecturerHomeState extends State<LecturerHome> {
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
   Widget _viewTab() {
     return Container(
-      color: const Color(0xFFF5F1E8),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Input card
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEDE7DB),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+      color: const Color(0xFFFAF7F0),
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF3D4F3F),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'View',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Stack(
-                children: [
-                  // Decorative circles
-                  Positioned(
-                    left: -50,
-                    top: 50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
                   ),
-                  Positioned(
-                    right: -30,
-                    bottom: 30,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Content
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section with Icon
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF3D4F3F),
                   ),
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Header
-                        const Text(
-                          'UNIPASS',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E3A5F),
-                            letterSpacing: 3,
-                          ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD4A574).withOpacity(0.2),
+                          shape: BoxShape.circle,
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'View Attendance Records',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF666666),
-                            letterSpacing: 1,
-                          ),
+                        child: const Icon(
+                          Icons.assessment,
+                          color: Color(0xFFD4A574),
+                          size: 40,
                         ),
-                        const SizedBox(height: 30),
-                        // Course ID field
-                        TextField(
-                          controller: viewCourseId,
-                          style: const TextStyle(fontSize: 14),
-                          decoration: InputDecoration(
-                            labelText: 'Course ID',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF666666),
-                              fontSize: 13,
-                            ),
-                            floatingLabelStyle: const TextStyle(
-                              color: Color(0xFF1E3A5F),
-                              fontSize: 14,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.7),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.7),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF1E3A5F),
-                                width: 2,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Attendance Records',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFAF7F0),
                         ),
-                        const SizedBox(height: 16),
-                        // Date field
-                        TextField(
-                          controller: viewDate,
-                          style: const TextStyle(fontSize: 14),
-                          decoration: InputDecoration(
-                            labelText: 'Date (YYYY-MM-DD)',
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF666666),
-                              fontSize: 13,
-                            ),
-                            floatingLabelStyle: const TextStyle(
-                              color: Color(0xFF1E3A5F),
-                              fontSize: 14,
-                            ),
-                            filled: true,
-                            fillColor: Colors.white.withOpacity(0.7),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.7),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF1E3A5F),
-                                width: 2,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'View student attendance',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: const Color(0xFFFAF7F0).withOpacity(0.7),
                         ),
-                        const SizedBox(height: 24),
-                        // Buttons
-                        Row(
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Form Section
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 32),
+                      
+                      // Input Fields Container
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2C3E2E),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton(
-                                  onPressed: _viewAttendance,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF1E3A5F),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'View',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                            // Course ID Input
+                            TextField(
+                              controller: viewCourseId,
+                              style: const TextStyle(color: Color(0xFFFAF7F0)),
+                              decoration: InputDecoration(
+                                labelText: 'Course ID',
+                                labelStyle: const TextStyle(
+                                  color: Color(0xFF9BA89C),
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.class_outlined,
+                                  size: 20,
+                                  color: Color(0xFFD4A574),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
                                   ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD4A574),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xFF3D4F3F),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: SizedBox(
-                                height: 48,
-                                child: ElevatedButton(
-                                  onPressed: _exportExcel,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0F8A5F),
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
+                            const SizedBox(height: 16),
+                            
+                            // Date Input
+                            TextField(
+                              controller: viewDate,
+                              style: const TextStyle(color: Color(0xFFFAF7F0)),
+                              decoration: InputDecoration(
+                                labelText: 'Date (YYYY-MM-DD)',
+                                labelStyle: const TextStyle(
+                                  color: Color(0xFF9BA89C),
+                                ),
+                                prefixIcon: const Icon(
+                                  Icons.calendar_today_outlined,
+                                  size: 20,
+                                  color: Color(0xFFD4A574),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
                                   ),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.file_download, size: 18),
-                                      SizedBox(width: 6),
-                                      Text(
-                                        'Export',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF3D4F3F),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFD4A574),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: const Color(0xFF3D4F3F),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            
+                            // View Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: _viewAttendance,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFD4A574),
+                                  foregroundColor: const Color(0xFF2C3E2E),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'View Attendance',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Results section
-            if (attendanceRows.isNotEmpty) ...[
-              // Total count card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.people,
-                      color: Color(0xFF1E3A5F),
-                      size: 28,
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'Total Students: ',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF666666),
                       ),
-                    ),
-                    Text(
-                      '$total',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E3A5F),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Attendance list
-              ...attendanceRows.map(
-                (r) => Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE0E0E0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
+
+                      // Attendance Results Section
+                      if (attendanceRows.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        
+                        // Total Count Card
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD4A574),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFD4A574).withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.people_rounded,
+                                color: Color(0xFF2C3E2E),
+                                size: 32,
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Total Students: ',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF2C3E2E),
+                                ),
+                              ),
+                              Text(
+                                '$total',
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2C3E2E),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Student Attendance List
+                        ...attendanceRows.map(
+                          (r) => Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2C3E2E),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              leading: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD4A574).withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.person_rounded,
+                                  color: Color(0xFFD4A574),
+                                  size: 24,
+                                ),
+                              ),
+                              title: Text(
+                                r['student_name'] ?? 'N/A',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color(0xFFFAF7F0),
+                                ),
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.badge_outlined,
+                                          size: 14,
+                                          color: Color(0xFF9BA89C),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          r['student_id'] ?? 'N/A',
+                                          style: const TextStyle(
+                                            color: Color(0xFF9BA89C),
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.access_time_rounded,
+                                          size: 14,
+                                          color: Color(0xFF9BA89C),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          r['submitted_at'] ?? 'N/A',
+                                          style: const TextStyle(
+                                            color: Color(0xFF9BA89C),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              trailing: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD4A574).withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Color(0xFFD4A574),
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else if (viewCourseId.text.isNotEmpty && viewDate.text.isNotEmpty)
+                        // Empty State
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(40),
+                          margin: const EdgeInsets.only(top: 20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2C3E2E),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.inbox_outlined,
+                                size: 64,
+                                color: const Color(0xFF3D4F3F),
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'No attendance records found',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF9BA89C),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Try a different date or course',
+                                style: TextStyle(fontSize: 14, color: Color(0xFF9BA89C)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 20),
                     ],
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E3A5F).withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        color: Color(0xFF1E3A5F),
-                        size: 24,
-                      ),
-                    ),
-                    title: Text(
-                      r['student_name'] ?? 'N/A',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'ID: ${r['student_id'] ?? 'N/A'}',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 13,
-                            ),
-                          ),
-                          Text(
-                            'Submitted: ${r['submitted_at'] ?? 'N/A'}',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    trailing: const Icon(
-                      Icons.check_circle,
-                      color: Color(0xFF0F8A5F),
-                      size: 24,
-                    ),
-                  ),
                 ),
-              ),
-            ] else if (viewCourseId.text.isNotEmpty && viewDate.text.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(32),
-                margin: const EdgeInsets.only(top: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
-                ),
-                child: Column(
-                  children: [
-                    Icon(Icons.info_outline, size: 48, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No attendance records found',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _emergencyTab() {
     return Container(
-      color: const Color(0xFFF5F1E8),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Header Card
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEDE7DB),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+      color: const Color(0xFFFAF7F0),
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            floating: false,
+            pinned: true,
+            backgroundColor: const Color(0xFF3D4F3F),
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text(
+                'Emergency',
+                style: TextStyle(
+                  color: Color(0xFFFAF7F0),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              child: Stack(
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF3D4F3F), Color(0xFF2C3E2E)],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Decorative circles
-                  Positioned(
-                    left: -50,
-                    top: 50,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'University Contacts',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2C3E2E),
                     ),
                   ),
-                  Positioned(
-                    right: -30,
-                    bottom: 30,
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8C4A0).withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
+                  const SizedBox(height: 12),
+                  _buildModernEmergencyContact(
+                    'Campus Security',
+                    '+66 xxx xxx xxx',
+                    Icons.security,
+                    const Color(0xFFD4A574),
                   ),
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                  _buildModernEmergencyContact(
+                    'Medical Unit',
+                    '+66 xxx xxx xxx',
+                    Icons.local_hospital,
+                    const Color(0xFFD4A574),
+                  ),
+                  _buildModernEmergencyContact(
+                    'Fire & Safety',
+                    '+66 xxx xxx xxx',
+                    Icons.fire_extinguisher,
+                    const Color(0xFFD4A574),
+                  ),
+                  _buildModernEmergencyContact(
+                    'Student Support',
+                    '+66 xxx xxx xxx',
+                    Icons.psychology,
+                    const Color(0xFFD4A574),
+                  ),
+                  _buildModernEmergencyContact(
+                    'IT Support',
+                    '+66 xxx xxx xxx',
+                    Icons.computer,
+                    const Color(0xFFD4A574),
+                  ),
+                  const SizedBox(height: 16),
+                  // Email Card
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2C3E2E),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
-                        // Header
-                        const Text(
-                          'UNIPASS',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E3A5F),
-                            letterSpacing: 3,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Emergency Contacts',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF666666),
-                            letterSpacing: 1,
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        // Emergency Icon
                         Container(
-                          width: 80,
-                          height: 80,
+                          width: 48,
+                          height: 48,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFD32F2F),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                            color: const Color(0xFFD4A574).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.email,
+                            color: Color(0xFFD4A574),
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Email Support',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color(0xFFFAF7F0),
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'helpdesk@youruniversity.edu',
+                                style: TextStyle(
+                                  color: Color(0xFF9BA89C),
+                                  fontSize: 13,
+                                ),
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.emergency,
-                            color: Colors.white,
-                            size: 40,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Quick access to emergency services',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF666666),
-                            fontStyle: FontStyle.italic,
-                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
-            // University Emergency Contacts Section
-            const Text(
-              'University Emergency Contacts',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.black,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            _buildUniversityContact(
-              'Campus Security Hotline',
-              '+66 xxx xxx xxx',
-              Icons.security,
-              const Color(0xFFD32F2F),
-            ),
-            _buildUniversityContact(
-              'Emergency Medical Unit',
-              '+66 xxx xxx xxx',
-              Icons.local_hospital,
-              const Color(0xFFE53935),
-            ),
-            _buildUniversityContact(
-              'Fire & Safety Department',
-              '+66 xxx xxx xxx',
-              Icons.fire_extinguisher,
-              const Color(0xFFF44336),
-            ),
-            _buildUniversityContact(
-              'Counseling & Student Support',
-              '+66 xxx xxx xxx',
-              Icons.psychology,
-              const Color(0xFF1976D2),
-            ),
-            _buildUniversityContact(
-              'IT Department (System Issues)',
-              '+66 xxx xxx xxx',
-              Icons.computer,
-              const Color(0xFF0288D1),
-            ),
-            const SizedBox(height: 16),
-            // Email Support Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE0E0E0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF757575).withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.email,
-                      color: Color(0xFF757575),
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Email Support',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'helpdesk@youruniversity.edu',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildUniversityContact(
+  Widget _buildModernEmergencyContact(
     String title,
     String phone,
     IconData icon,
     Color color,
   ) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF2C3E2E),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -1573,24 +1567,28 @@ class _LecturerHomeState extends State<LecturerHome> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
+            color: color.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: color, size: 24),
         ),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: Color(0xFFFAF7F0),
+          ),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             phone,
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            style: const TextStyle(color: Color(0xFF9BA89C), fontSize: 13),
           ),
         ),
         trailing: IconButton(
-          icon: Icon(Icons.phone, color: color, size: 24),
+          icon: Icon(Icons.phone, color: color, size: 22),
           onPressed: () => _callEmergencyContact(phone),
         ),
       ),
