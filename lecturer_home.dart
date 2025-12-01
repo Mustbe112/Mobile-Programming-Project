@@ -1520,7 +1520,7 @@ class _LecturerHomeState extends State<LecturerHome> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                'helpdesk@youruniversity.edu',
+                                'helpdesk@university.edu',
                                 style: TextStyle(
                                   color: Color(0xFF9BA89C),
                                   fontSize: 13,
