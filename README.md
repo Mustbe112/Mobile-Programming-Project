@@ -1,4 +1,4 @@
-# 🎓 UNIPASS — Digital Campus ID & Attendance System
+# UNIPASS — Digital Campus ID & Attendance System
 
 > A full-stack mobile + backend application for university digital identity and attendance management.
 
@@ -10,31 +10,31 @@
 
 ---
 
-## 📋 Overview
+## Overview
 
 UNIPASS is a university digital campus ID and attendance system. Students and lecturers get a QR-code-based digital ID, and lecturers can generate time-limited attendance codes that students submit through the app. Admins manage all user accounts through a dedicated dashboard.
 
 ---
 
-## ✨ Features
+## Features
 
-### 👤 All Users
+### All Users
 - Login with role-based routing (Student / Lecturer / Admin)
 - Auto-login using `SharedPreferences` session persistence
 - Personal QR code containing encoded profile info
 - Emergency contacts with one-tap calling
 
-### 🎓 Students
+### Students
 - View profile, department, and major
 - Enroll in and unenroll from courses
 - Submit attendance using a lecturer-issued code
 
-### 👨‍🏫 Lecturers
+### Lecturers
 - View profile and manage courses (add/delete)
 - Generate a **6-character attendance code** (valid for 15 minutes)
 - View attendance records by course and date
 
-### 🛡️ Admins
+### Admins
 - Search users by ID
 - Create new student/lecturer accounts
 - Edit user info (name, department, major)
@@ -43,7 +43,7 @@ UNIPASS is a university digital campus ID and attendance system. Students and le
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────┐        ┌──────────────────────────┐
@@ -58,7 +58,7 @@ UNIPASS is a university digital campus ID and attendance system. Students and le
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 unipass/
@@ -90,7 +90,7 @@ unipass/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Auth — `/api/auth`
 
@@ -136,7 +136,7 @@ unipass/
 
 ---
 
-## 🗄️ Database Tables
+## Database Tables
 
 | Table | Key Columns | Description |
 |-------|------------|-------------|
@@ -149,7 +149,7 @@ unipass/
 
 ---
 
-## 📱 App Screens
+## App Screens
 
 ### Student (`StudentHome`)
 | Tab | Content |
@@ -177,7 +177,7 @@ unipass/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Flutter SDK (3.x or higher)
@@ -216,11 +216,11 @@ flutter pub get
 flutter run
 ```
 
-> ⚠️ **Important:** The API base URL in `api.dart` is set to `http://10.0.2.2:3000/api` (Android emulator localhost). Change this to your actual server IP when deploying to a real device.
+>  **Important:** The API base URL in `api.dart` is set to `http://10.0.2.2:3000/api` (Android emulator localhost). Change this to your actual server IP when deploying to a real device.
 
 ---
 
-## 📦 Dependencies
+## Dependencies
 
 ### Backend (`package.json`)
 
@@ -244,7 +244,7 @@ flutter run
 
 ---
 
-## ⚠️ Known Limitations
+## Known Limitations
 
 - Passwords are stored in **plain text** — no hashing (e.g. bcrypt) implemented
 - No JWT or token-based authentication; API endpoints are unprotected
@@ -255,7 +255,7 @@ flutter run
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 - [ ] Hash passwords with `bcrypt`
 - [ ] Add JWT authentication middleware to protect API routes
@@ -267,6 +267,6 @@ flutter run
 
 ---
 
-## 👤 Author
+## Author
 
 Developed as a Flutter + Node.js full-stack university project.
