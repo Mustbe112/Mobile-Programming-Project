@@ -257,13 +257,13 @@ flutter run
 
 ## Future Improvements
 
-- [ ] Hash passwords with `bcrypt`
-- [ ] Add JWT authentication middleware to protect API routes
-- [ ] Make API base URL configurable (e.g., via `.env` or build flavor)
-- [ ] Show countdown timer on generated attendance codes
-- [ ] Add QR code scanner for attendance submission
-- [ ] Add push notifications for upcoming classes
-- [ ] Replace placeholder emergency numbers with real contacts
+-  Hash passwords with `bcrypt`
+-  Add JWT authentication middleware to protect API routes
+-  Make API base URL configurable (e.g., via `.env` or build flavor)
+-  Show countdown timer on generated attendance codes
+-  Add QR code scanner for attendance submission
+-  Add push notifications for upcoming classes
+-  Replace placeholder emergency numbers with real contacts
 
 ---
 
