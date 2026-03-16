@@ -14,7 +14,7 @@
 
 UNIPASS is a university digital campus ID and attendance system. Students and lecturers get a QR-code-based digital ID, and lecturers can generate time-limited attendance codes that students submit through the app. Admins manage all user accounts through a dedicated dashboard.
 
-Demo View : Unipass.pdf
+Demo View : [Unipass.pdf](https://github.com/Mustbe112/Smart-Digital-Student-ID-Unique-Code-Based-Attendance-System/blob/1258b8a7dee730c3fb938ac64f6f285b53e25164/Unipass.pdf)
 ---
 
 ## Features
